@@ -61,4 +61,16 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+// Update a Account user (PUT)
+router.put('/:id/account', (req, res) => {
+    const data = req.body;
+    UserService.updateAccount(req.params.id, data, (err, changes) => {
+        if (err) {
+            UtilService.toResult(res, null, err.message);
+            return;
+        }
+        UtilService.toResult(res, changes, "User Update Successfully");
+    });
+});
+
 module.exports = router;

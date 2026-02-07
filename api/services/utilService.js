@@ -15,9 +15,10 @@ class UtilService {
         const resCode = ((!output || output == null) ? 400 : 201);
         const resStat = (resCode == 400 ? "error" : "success");
         const resInfo = (!strMessage ? "" : strMessage);
-        const resData = (output || {});
+        const resData = (output || []);
+        const resRows = (Array.isArray(resData) ? resData.length : 0);
 
-        res.status(resCode).json({"status": resStat, "message": resInfo, "data": resData});
+        res.status(resCode).json({"status": resStat, "message": resInfo, "rows": resRows, "data": resData});
     }
 }
 

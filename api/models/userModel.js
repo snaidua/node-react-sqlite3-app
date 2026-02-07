@@ -35,6 +35,13 @@ class UserModel {
             callback(err, this.changes);
         });
     }
+
+    static account(id, data, callback) {
+        const qry = 'UPDATE users SET usr_bank = ?, usr_acc = ?, usr_ifsc = ? WHERE usr_stat = "AC" AND usr_id = ?';
+        db.run(qry, [data.usr_bank, data.usr_acc, data.usr_ifsc, id], function (err) {
+            callback(err, this.changes);
+        });
+    }
 }
 
 module.exports = UserModel;

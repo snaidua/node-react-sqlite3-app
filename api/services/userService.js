@@ -26,6 +26,11 @@ class UserService {
     static deleteUser(id, callback) {
         UserModel.delete(id, callback);
     }
+
+    static updateAccount(id, data, callback) {
+        // Add any validation or business logic here
+        UserModel.account(id, data, callback);
+    }
 }
 
 module.exports = UserService;

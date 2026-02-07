@@ -14,10 +14,11 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     usr_name TEXT NOT NULL,
                     usr_mobi TEXT UNIQUE NOT NULL,
                     usr_mail TEXT UNIQUE NOT NULL,
+                    usr_bank TEXT, usr_acc TEXT, usr_ifsc TEXT,
                     usr_doj TEXT NOT NULL,
                     usr_stat TEXT NOT NULL,
                     
-                    CONSTRAINT email_unique UNIQUE (usr_mobi, usr_mail)
+                    CONSTRAINT user_unique UNIQUE (usr_mobi, usr_mail)
                 )`, 
                 (err) => {
                     if (err) { console.error(err); }
@@ -59,6 +60,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
 
         // User - Plan
         db.run(`CREATE TABLE IF NOT EXISTS userplans (
+                    map_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     usr_id INTEGER NOT NULL,
                     pln_id INTEGER NOT NULL,
                     map_inv REAL NOT NULL,
@@ -78,6 +80,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         
         // User - Tran
         db.run(`CREATE TABLE IF NOT EXISTS usertrans (
+                    tran_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
                     usr_id INTEGER NOT NULL,
                     pln_id INTEGER NOT NULL,
                     
