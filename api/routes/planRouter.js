@@ -1,63 +1,63 @@
 const express = require('express');
 const router = express.Router();
 
-const UserService = require('../services/userService');
+const PlanService = require('../services/planService');
 const UtilService = require('../services/utilService');
 
-// Get all users
+// Get all Plans
 router.get('/', (req, res) => {
-    UserService.getAllUsers((err, rows) => {
+    PlanService.getAllPlans((err, rows) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, rows, "Users Fetched Successfully");
+        UtilService.toResult(res, rows, "Plans Fetched Successfully");
     });
 });
 
-// Get user by id
+// Get Plan by id
 router.get('/:id', (req, res) => {
-    UserService.getUserById(req.params.id, (err, row) => {
+    PlanService.getPlanById(req.params.id, (err, row) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, row, "User Fetched Successfully");
+        UtilService.toResult(res, row, "Plan Fetched Successfully");
     });
 });
 
-// Create a new user (POST)
+// Create a new Plan (POST)
 router.post('/', (req, res) => {
     const data = req.body;
-    UserService.createUser(data, (err, lastID) => {
+    PlanService.createPlan(data, (err, lastID) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "User Added Successfully");
+        UtilService.toResult(res, lastID, "Plan Added Successfully");
     });
 });
 
-// Update a user (PUT)
+// Update a Plan (PUT)
 router.put('/:id', (req, res) => {
     const data = req.body;
-    UserService.updateUser(req.params.id, data, (err, changes) => {
+    PlanService.updatePlan(req.params.id, data, (err, changes) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, changes, "User Update Successfully");
+        UtilService.toResult(res, changes, "Plan Updated Successfully");
     });
 });
 
-// Delete a user (DELETE)
+// Delete a Plan (DELETE)
 router.delete('/:id', (req, res) => {
-    UserService.deleteUser(req.params.id, (err, changes) => {
+    PlanService.deletePlan(req.params.id, (err, changes) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, changes, "User Deleted Successfully");
+        UtilService.toResult(res, changes, "Plan Deleted Successfully");
     });
 });
 

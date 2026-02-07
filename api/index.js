@@ -1,15 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./database'); // Initialize database connection
-const userRoutes = require('./routes/userRouter');
+const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// Use user routes for /api/users endpoint
-app.use('/api/users', userRoutes);
+// Use routes
+app.use('/api/users', routes.UserRouter);
+app.use('/api/plans', routes.PlanRouter);
 
 // Default route
 app.get('/', (req, res) => {

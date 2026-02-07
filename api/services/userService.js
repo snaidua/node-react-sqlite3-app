@@ -9,17 +9,18 @@ class UserService {
         UserModel.getById(id, callback);
     }
 
-    static createUser(user, callback) {
-        // Add any validation or business logic here
-        if (!user.name || !user.email) {
-            return callback(new Error("Name and email are required."));
+    static createUser(data, callback) {
+        /*
+        if (!user.usr_name || !user.usr_mobi || !user.usr_mail) {
+            return callback(new Error(user));
         }
-        UserModel.create(user, callback);
+        */
+        UserModel.create(data, callback);
     }
 
-    static updateUser(id, user, callback) {
+    static updateUser(id, data, callback) {
         // Add any validation or business logic here
-        UserModel.update(id, user, callback);
+        UserModel.update(id, data, callback);
     }
 
     static deleteUser(id, callback) {
