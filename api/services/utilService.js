@@ -2,7 +2,7 @@ class UtilService {
     static getDateTime(blnWithTime) {
         const dt = new Date();
 
-        const yy = dt.getFullYear(), mm = dt.getMonth(), dd = dt.getDay();
+        const yy = dt.getFullYear(), mm = dt.getMonth()+1, dd = dt.getDate();
         const hh = dt.getHours(), mn = dt.getMinutes(), ss = dt.getSeconds(); 
         
         const sdt= yy + "-" + (mm < 10 ? "0" : "") + mm + "-" + (dd < 10 ? "0" : "") + dd 

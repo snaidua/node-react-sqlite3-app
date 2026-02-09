@@ -3,7 +3,7 @@ const db = require('../database');
 
 class UserModel {
     static all(callback) {
-        const qry = "SELECT * FROM users WHERE usr_stat = 'AC'";
+        const qry = "SELECT * FROM usersView";
         db.all(qry, [], callback);
     }
 

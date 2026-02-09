@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 // Use routes
 app.use('/api/users', routes.UserRouter);
 app.use('/api/plans', routes.PlanRouter);
+app.use('/api/trans', routes.TranRouter);
 
 // Default route
 app.get('/', (req, res) => {
