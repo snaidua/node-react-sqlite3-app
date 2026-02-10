@@ -31,6 +31,14 @@ class UserService {
         // Add any validation or business logic here
         UserModel.account(id, data, callback);
     }
+
+    static getPlans(id, callback) {
+        UserModel.plans(id, callback);
+    }
+
+    static getTrans(id, callback) {
+        UserModel.trans(id, callback);
+    }
 }
 
 module.exports = UserService;

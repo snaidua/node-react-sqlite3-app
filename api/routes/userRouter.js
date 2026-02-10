@@ -73,4 +73,26 @@ router.put('/:id/account', (req, res) => {
     });
 });
 
+// Get userplans by id
+router.get('/:id/plans', (req, res) => {
+    UserService.getPlans(req.params.id, (err, row) => {
+        if (err) {
+            UtilService.toResult(res, null, err.message);
+            return;
+        }
+        UtilService.toResult(res, row, "User $(req.params.id) Plans Fetched Successfully");
+    });
+});
+
+// Get userTrans by id
+router.get('/:id/trans', (req, res) => {
+    UserService.getTrans(req.params.id, (err, row) => {
+        if (err) {
+            UtilService.toResult(res, null, err.message);
+            return;
+        }
+        UtilService.toResult(res, row, "User Trans Fetched Successfully");
+    });
+});
+
 module.exports = router;

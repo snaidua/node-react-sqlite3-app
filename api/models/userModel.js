@@ -3,7 +3,7 @@ const db = require('../database');
 
 class UserModel {
     static all(callback) {
-        const qry = "SELECT * FROM usersView";
+        const qry = "SELECT * FROM usersvw";
         db.all(qry, [], callback);
     }
 
@@ -41,6 +41,16 @@ class UserModel {
         db.run(qry, [data.usr_bank, data.usr_acc, data.usr_ifsc, id], function (err) {
             callback(err, this.changes);
         });
+    }
+
+    static plans(id, callback) {
+        const qry = 'SELECT * FROM userplans WHERE map_stat = "AC" AND usr_id = ?';
+        db.get(qry, [id], callback);
+    }
+
+    static trans(id, callback) {
+        const qry = 'SELECT * FROM trans WHERE tran_stat = "AC" AND usr_id = ?';
+        db.get(qry, [id], callback);
     }
 }
 

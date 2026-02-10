@@ -23,24 +23,15 @@ class TranService {
     }
 
     static InvestCapital(data, callback) {
-        data.tran_base = "CAPITAL";
-        data.tran_dir = "CR";
-
-        TranModel.create(data, callback);
+        TranModel.invest(data, callback);
     }
 
     static WithdrawCapital(data, callback) {
-        data.tran_base = "CAPITAL";
-        data.tran_dir = "DB";
-
-        TranModel.create(data, callback);
+        TranModel.withdraw(data, callback);
     }
 
     static creditProfit(data, callback) {
-        data.tran_base = "PROFIT";
-        data.tran_dir = "CR";
-
-        TranModel.create(data, callback);
+        TranModel.profit(data, callback);
     }
 }
 
