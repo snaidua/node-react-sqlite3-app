@@ -80,7 +80,7 @@ router.get('/:id/plans', (req, res) => {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, row, "User $(req.params.id) Plans Fetched Successfully");
+        UtilService.toResult(res, row, "User Plans Fetched Successfully");
     });
 });
 

@@ -4,7 +4,9 @@ const db = require('./database'); // Initialize database connection
 const routes = require('./routes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+require('dotenv').config();
+const PORT = process.env.PORT || 3300;
 
 app.use(bodyParser.json());
 
@@ -12,6 +14,7 @@ app.use(bodyParser.json());
 app.use('/api/users', routes.UserRouter);
 app.use('/api/plans', routes.PlanRouter);
 app.use('/api/trans', routes.TranRouter);
+app.use('/api/mails', routes.MailRouter);
 
 // Default route
 app.get('/', (req, res) => {

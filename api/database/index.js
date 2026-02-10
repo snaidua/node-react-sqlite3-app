@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const DBSOURCE = "./data.sqlite";
+const DBSOURCE = "./database/data.sqlite";
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
@@ -111,7 +111,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (err) => {
                     if (err) { console.error(err); }
                 }
-        )
+            );
 
         db.run(`CREATE TRIGGER IF NOT EXISTS transInsertCapitalTrigger
                 AFTER INSERT
@@ -131,7 +131,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             (err) => {
                 if (err) { console.error(err); }
             }
-        )
+            );
 
         db.run(`CREATE TRIGGER IF NOT EXISTS transUpdateCapitalTrigger
                 AFTER UPDATE
@@ -155,7 +155,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             (err) => {
                 if (err) { console.error(err); }
             }
-        )
+            );
 
         db.run(`CREATE TRIGGER IF NOT EXISTS transInsertProfitTrigger
                 AFTER INSERT
@@ -170,12 +170,17 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, 0, NEW.tran_amt, 'AC'
                     WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+
+                    UPDATE  userplans
+                        SET map_stat = 'CL'
+                    WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id
+                        AND EXISTS ( SELECT 'X' FROM plans WHERE pln_id = NEW.pln_id AND pln_freq = 'L' );
                 END
                 `,
             (err) => {
                 if (err) { console.error(err); }
             }
-        )
+            );
 
         db.run(`CREATE TRIGGER IF NOT EXISTS transUpdateProfitTrigger
                 AFTER UPDATE
@@ -194,12 +199,17 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, 0, NEW.tran_amt, 'AC'
                     WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+
+                    UPDATE  userplans
+                        SET map_stat = 'CL'
+                    WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id
+                        AND EXISTS ( SELECT 'X' FROM plans WHERE pln_id = NEW.pln_id AND pln_freq = 'L' );
                 END
                 `,
             (err) => {
                 if (err) { console.error(err); }
             }
-        )
+            );
 
     }
 });

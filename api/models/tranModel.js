@@ -38,7 +38,7 @@ class TranModel {
         }
         const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err, this.lastID);
+            callback(err);
         });
     }
 
@@ -52,7 +52,7 @@ class TranModel {
         }
         const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err, this.lastID);
+            callback(err);
         });
     }
 
@@ -66,7 +66,7 @@ class TranModel {
         }
         const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err, this.lastID);
+            callback(err);
         });
     }
 }
