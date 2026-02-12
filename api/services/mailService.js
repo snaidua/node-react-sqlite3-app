@@ -1,23 +1,23 @@
 const nodemailer = require('nodemailer');
+const Config = require("./../config");
 
 class MailService {
 
     static send(data, callback) {
 
-        require('dotenv').config();
-        const evar = process.env;
-
+        const mail = Config.MAIL;
         let transporter = nodemailer.createTransport({
-            service: evar.SERVER_NAME,
-            port: evar.SERVER_PORT,
+            service: mail.SERVER_NAME,
+            port: mail.SERVER_PORT,
+            secure: mail.SERVER_SSL,
             auth: {
-                user: evar.USER_ID,
-                pass: evar.USER_PASS
+                user: mail.USER_ID,
+                pass: mail.USER_PASS
             }
         }); 
 
         let mailOptions = {
-            from: evar.USER_MAIL,
+            from: mail.USER_MAIL,
             to: data.to,
             subject: data.sub,
             text: data.body
