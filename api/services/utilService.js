@@ -20,6 +20,20 @@ class UtilService {
 
         res.status(resCode).json({"status": resStat, "message": resInfo, "rows": resRows, "data": resData});
     }
+
+    static getRandomKey() {
+        const uuid4 = require("uuid").v4;
+        
+        const randKey = uuid4();
+        return randKey;
+    }
+
+    static getRandomPin() {
+        const rand = Math.random();
+        const secureRange = Math.floor(Math.random() * 1000) + 1;
+        const randPin = String(secureRange).padStart(4, '0');;
+        return randPin;
+    }
 }
 
 module.exports = UtilService;

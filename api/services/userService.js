@@ -1,4 +1,6 @@
 const UserModel = require('../models/userModel');
+const SesnModel = require('../models/sesnModel');
+const MailService = require('./mailService');
 
 class UserService {
     static getAllUsers(callback) {
@@ -31,6 +33,36 @@ class UserService {
 
     static getTrans(id, callback) {
         UserModel.trans(id, callback);
+    }
+
+    static loginByMail(data, callback) {
+        UserModel.getByMail(data, (err, user) => {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                SesnModel.create(user, (err, sesn) => {
+                    if (err) {
+                        callback(err, null);
+                    }
+                    else {
+                        const res = {
+                            mbody: { "to": user.usr_mail, "sub": "OTP to Authenticate", "body": "Your OTP is " + sesn.ses_pin },
+                            mdata: { ...user, ses_key: sesn.ses_key }
+                        }
+                        MailService.send(res.mbody, (err, info) => {
+                            callback(err, res.mdata);
+                        })
+                    }
+                });
+            }
+        })
+    }
+
+    static verifyByPin(data, callback) {
+            SesnModel.verifyPin(data, (err, res) => {
+                callback(err, res);
+            });
     }
 }
 

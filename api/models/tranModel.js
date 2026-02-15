@@ -4,27 +4,50 @@ const db = require('../database');
 class TranModel {
     static all(callback) {
         const qry = "SELECT * FROM trans WHERE tran_stat = 'AC'";
-        db.all(qry, [], callback);
+        db.all(qry, [], (err, res) => {
+            if (!err && (res == undefined || res.length == 0) ) {
+                err = new Error("Trans Not Found")
+            }
+            callback(err, res);
+        });
     }
 
     static getById(id, callback) {
         const qry = "SELECT * FROM trans WHERE tran_stat = 'AC' AND tran_id = ?";
-        db.get(qry, [id], callback);
+        db.get(qry, [id], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Tran Not Found with given ID")
+            }
+            callback(err, res);
+        });
+    }
+
+    static getByUser(id, callback) {
+        const qry = "SELECT * FROM trans WHERE tran_stat = 'AC' AND usr_id = ?";
+        db.get(qry, [id], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Trans Not Found with given User")
+            }
+            callback(err, res);
+        });
     }
 
     static create(data, callback) {
         data.tran_stat= 'AC';
 
-        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err, this.lastID);
+        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING * ';
+        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], (err, row) => {
+            callback(err, row);
         });
     }
 
     static delete(id, callback) {
-        const qry = 'UPDATE trans SET tran_stat = "IA" WHERE tran_stat = "AC" AND tran_id = ?';
-        db.run(qry, [id], function (err) {
-            callback(err, this.changes);
+        const qry = 'UPDATE trans SET tran_stat = "IA" WHERE tran_stat = "AC" AND tran_id = ? RETURNING tran_id';
+        db.run(qry, [id], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Tran Not Found with given ID to Delete")
+            }
+            callback(err, res);
         });
     }
 
@@ -36,9 +59,12 @@ class TranModel {
             tran_amt: rdata.tran_amt, tran_rem: (rdata.tran_rem || 'investment'),
             tran_stat: "AC"
         }
-        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err);
+        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING tran_id';
+        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Investment not updated")
+            }
+            callback(err, res);
         });
     }
 
@@ -50,9 +76,12 @@ class TranModel {
             tran_amt: rdata.tran_amt, tran_rem: (rdata.tran_rem || 'withdraw'),
             tran_stat: "AC"
         }
-        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err);
+        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING tran_id';
+        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Withdraw not updated")
+            }
+            callback(err, res);
         });
     }
 
@@ -64,9 +93,12 @@ class TranModel {
             tran_amt: rdata.tran_amt, tran_rem: (rdata.tran_rem || 'profit'),
             tran_stat: "AC"
         }
-        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], function (err) {
-            callback(err);
+        const qry = 'INSERT INTO trans (tran_dt, usr_id, pln_id, tran_base, tran_dir, tran_amt, tran_rem, tran_stat) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING tran_id';
+        db.run(qry, [data.tran_dt, data.usr_id, data.pln_id, data.tran_base, data.tran_dir, data.tran_amt, data.tran_rem, data.tran_stat], (err, res) => {
+            if (!err && res == undefined) {
+                err = new Error("Profit not updated")
+            }
+            callback(err, res);
         });
     }
 }

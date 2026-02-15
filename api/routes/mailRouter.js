@@ -9,6 +9,7 @@ router.post('/send', (req, res) => {
 
     MailService.send(data, (err, info) => {
         if (err) {
+            console.log(err.message);
             UtilService.toResult(res, null, err.message);
             return;
         }

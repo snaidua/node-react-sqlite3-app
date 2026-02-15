@@ -7,10 +7,11 @@ app.use(bodyParser.json());
 
 // Use routes
 const routes = require('./routes');
-app.use('/api/users', routes.UserRouter);
-app.use('/api/plans', routes.PlanRouter);
-app.use('/api/trans', routes.TranRouter);
-app.use('/api/mails', routes.MailRouter);
+app.use('/users', routes.UserRouter);
+app.use('/plans', routes.PlanRouter);
+app.use('/trans', routes.TranRouter);
+app.use('/sesns', routes.SesnRouter);
+app.use('/mails', routes.MailRouter);
 
 // Default route
 app.get('/', (req, res) => {

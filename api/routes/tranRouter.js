@@ -29,56 +29,56 @@ router.get('/:id', (req, res) => {
 // Create a new Tran (POST)
 router.post('/', (req, res) => {
     const data = req.body;
-    TranService.createTran(data, (err, lastID) => {
+    TranService.createTran(data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "Tran Added Successfully");
+        UtilService.toResult(res, data, "Tran Added Successfully");
     });
 });
 
 // Delete a Tran (DELETE)
 router.delete('/:id', (req, res) => {
-    TranService.deleteTran(req.params.id, (err, changes) => {
+    TranService.deleteTran(req.params.id, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, changes, "Tran Deleted Successfully");
+        UtilService.toResult(res, data, "Tran Deleted Successfully");
     });
 });
 
 router.post('/invest', (req, res) => {
     const data = req.body;
-    TranService.InvestCapital(data, (err, lastID) => {
+    TranService.InvestCapital(data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "Capital Invested Successfully");
+        UtilService.toResult(res, data, "Capital Invested Successfully");
     });
 });
 
 router.post('/withdraw', (req, res) => {
     const data = req.body;
-    TranService.WithdrawCapital(data, (err, lastID) => {
+    TranService.WithdrawCapital(data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "Capital Withdrawn Successfully");
+        UtilService.toResult(res, data, "Capital Withdrawn Successfully");
     });
 });
 
 router.post('/profit', (req, res) => {
     const data = req.body;
-    TranService.creditProfit(data, (err, lastID) => {
+    TranService.creditProfit(data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "Profit Credited Successfully");
+        UtilService.toResult(res, data, "Profit Credited Successfully");
     });
 });
 

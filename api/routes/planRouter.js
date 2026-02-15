@@ -29,35 +29,35 @@ router.get('/:id', (req, res) => {
 // Create a new Plan (POST)
 router.post('/', (req, res) => {
     const data = req.body;
-    PlanService.createPlan(data, (err, lastID) => {
+    PlanService.createPlan(data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, lastID, "Plan Added Successfully");
+        UtilService.toResult(res, data, "Plan Added Successfully");
     });
 });
 
 // Update a Plan (PUT)
 router.put('/:id', (req, res) => {
     const data = req.body;
-    PlanService.updatePlan(req.params.id, data, (err, changes) => {
+    PlanService.updatePlan(req.params.id, data, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, changes, "Plan Updated Successfully");
+        UtilService.toResult(res, data, "Plan Updated Successfully");
     });
 });
 
 // Delete a Plan (DELETE)
 router.delete('/:id', (req, res) => {
-    PlanService.deletePlan(req.params.id, (err, changes) => {
+    PlanService.deletePlan(req.params.id, (err, data) => {
         if (err) {
             UtilService.toResult(res, null, err.message);
             return;
         }
-        UtilService.toResult(res, changes, "Plan Deleted Successfully");
+        UtilService.toResult(res, data, "Plan Deleted Successfully");
     });
 });
 

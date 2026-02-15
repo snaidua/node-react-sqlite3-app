@@ -6,7 +6,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         console.error(err.message);
         throw err;
     } else {
-        console.log('Connected to the SQLite database.');
+        console.log('SQLite : Connection established.');
 
         // Users
         db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -26,10 +26,11 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             );
 
         // Sessions
-        db.run(`CREATE TABLE IF NOT EXISTS sessions (
+        db.run(`CREATE TABLE IF NOT EXISTS sesns (
                     ses_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     usr_id INTEGER NOT NULL,
                     ses_key TEXT NOT NULL,
+                    ses_pin TEXT NOT NULL,
                     ses_tm1 TEXT NOT NULL,
                     ses_tm2 TEXT,
                     ses_stat TEXT NOT NULL,
@@ -41,6 +42,34 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     if (err) { console.error(err); }
                 }
             );
+
+        db.run(`CREATE VIEW IF NOT EXISTS sesnsvw
+                AS
+                    SELECT  A.usr_id, A.usr_name, A.usr_mobi, A.usr_mail,
+                            IFNULL(B.ses_id,'') AS ses_id, IFNULL(B.ses_key,'') AS ses_key, IFNULL(B.ses_pin,'') AS ses_pin, 
+                            IFNULL(B.ses_tm1,'') AS ses_tm1, IFNULL(B.ses_stat,'') AS ses_stat
+                    FROM    users A LEFT OUTER JOIN sesns B ON A.usr_id = B.usr_id
+                    WHERE   ses_stat <> 'CL';
+                `,
+                (err) => {
+                    if (err) { console.error(err); }
+                }
+            );    
+
+        db.run(`CREATE TRIGGER IF NOT EXISTS sesnsInsertTrigger
+                BEFORE INSERT
+                ON sesns
+                FOR EACH ROW
+                BEGIN
+                    UPDATE  sesns
+                        SET ses_tm2 = NEW.ses_tm1, ses_stat = 'CL'
+                    WHERE   usr_id = NEW.usr_id AND ses_stat <> 'CL';
+                END
+                `,
+                (err) => {
+                    if (err) { console.error(err); }
+                }
+            );    
 
         // Plans
         db.run(`CREATE TABLE IF NOT EXISTS plans (
@@ -59,7 +88,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             );
 
         // User - Plan
-        db.run(`CREATE TABLE IF NOT EXISTS userplans (
+        db.run(`CREATE TABLE IF NOT EXISTS uplans (
                     map_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     usr_id INTEGER NOT NULL,
                     pln_id INTEGER NOT NULL,
@@ -105,7 +134,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 AS
                     SELECT  A.usr_id, A.usr_name, A.usr_mobi, A.usr_mail,
                             IFNULL(B.pln_id,'') AS pln_id, IFNULL(B.map_inv,0) AS map_inv, IFNULL(B.map_roi,0) AS map_roi
-                    FROM    users A LEFT OUTER JOIN userplans B ON A.usr_id = B.usr_id
+                    FROM    users A LEFT OUTER JOIN uplans B ON A.usr_id = B.usr_id
                     WHERE   usr_stat = 'AC';
                 `,
                 (err) => {
@@ -119,13 +148,13 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 FOR EACH ROW
                 WHEN NEW.tran_base = 'CAPITAL'
                 BEGIN
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_inv = map_inv + (CASE WHEN NEW.tran_dir = 'CR' THEN 1 ELSE -1 END) * NEW.tran_amt
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id;
 
-                    INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
+                    INSERT INTO uplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, NEW.tran_amt, 0, 'AC'
-                    WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+                    WHERE NOT EXISTS ( SELECT 'X' FROM uplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
                 END
                 `,
             (err) => {
@@ -139,17 +168,17 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 FOR EACH ROW
                 WHEN NEW.tran_base = 'CAPITAL'
                 BEGIN
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_inv = map_inv + (CASE WHEN OLD.tran_dir = 'CR' THEN -1 ELSE 1 END) * OLD.tran_amt
                     WHERE   usr_id = OLD.usr_id AND pln_id = OLD.pln_id;
 
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_inv = map_inv + (CASE WHEN NEW.tran_dir = 'CR' THEN 1 ELSE -1 END) * NEW.tran_amt
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id;
 
-                    INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
+                    INSERT INTO uplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, NEW.tran_amt, 0, 'AC'
-                    WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+                    WHERE NOT EXISTS ( SELECT 'X' FROM uplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
                 END
                 `,
             (err) => {
@@ -163,15 +192,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 FOR EACH ROW
                 WHEN NEW.tran_base = 'PROFIT'
                 BEGIN
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_roi = map_roi + (CASE WHEN NEW.tran_dir = 'CR' THEN 1 ELSE -1 END) * NEW.tran_amt
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id;
 
-                    INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
+                    INSERT INTO uplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, 0, NEW.tran_amt, 'AC'
-                    WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+                    WHERE NOT EXISTS ( SELECT 'X' FROM uplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
 
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_stat = 'CL'
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id
                         AND EXISTS ( SELECT 'X' FROM plans WHERE pln_id = NEW.pln_id AND pln_freq = 'L' );
@@ -188,19 +217,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 FOR EACH ROW
                 WHEN NEW.tran_base = 'PROFIT'
                 BEGIN
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_roi = map_roi + (CASE WHEN OLD.tran_dir = 'CR' THEN -1 ELSE 1 END) * OLD.tran_amt
                     WHERE   usr_id = OLD.usr_id AND pln_id = OLD.pln_id;
 
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_roi = map_roi + (CASE WHEN NEW.tran_dir = 'CR' THEN 1 ELSE -1 END) * NEW.tran_amt
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id;
 
-                    INSERT INTO userplans (usr_id, pln_id, map_inv, map_roi, map_stat)
+                    INSERT INTO uplans (usr_id, pln_id, map_inv, map_roi, map_stat)
                     SELECT NEW.usr_id, NEW.pln_id, 0, NEW.tran_amt, 'AC'
-                    WHERE NOT EXISTS ( SELECT 'X' FROM userplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
+                    WHERE NOT EXISTS ( SELECT 'X' FROM uplans WHERE usr_id = NEW.usr_id AND pln_id = NEW.pln_id ) AND NEW.tran_dir = 'CR';
 
-                    UPDATE  userplans
+                    UPDATE  uplans
                         SET map_stat = 'CL'
                     WHERE   usr_id = NEW.usr_id AND pln_id = NEW.pln_id
                         AND EXISTS ( SELECT 'X' FROM plans WHERE pln_id = NEW.pln_id AND pln_freq = 'L' );
@@ -211,6 +240,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }
             );
 
+        console.log('SQLite : Objects initiated.');
     }
 });
 

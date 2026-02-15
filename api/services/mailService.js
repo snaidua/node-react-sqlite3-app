@@ -7,12 +7,15 @@ class MailService {
 
         const mail = Config.MAIL;
         let transporter = nodemailer.createTransport({
-            service: mail.SERVER_NAME,
+            host: mail.SERVER_HOST,
             port: mail.SERVER_PORT,
             secure: mail.SERVER_SSL,
             auth: {
                 user: mail.USER_ID,
                 pass: mail.USER_PASS
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         }); 
 
@@ -26,6 +29,5 @@ class MailService {
         transporter.sendMail(mailOptions, callback);
     }
 }
-
 
 module.exports = MailService;
